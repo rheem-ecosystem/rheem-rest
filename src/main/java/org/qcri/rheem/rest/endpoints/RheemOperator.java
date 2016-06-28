@@ -76,6 +76,7 @@ public class RheemOperator {
             response.put("operators", operators);
         }
         catch(Exception e) {
+            e.printStackTrace();
             response.put("error", e.toString());
         }
         return response;

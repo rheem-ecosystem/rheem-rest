@@ -51,6 +51,7 @@ public class Plan {
             response.put("stages", execplan.toJsonList());
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            e.printStackTrace();
             response.put("error", e.toString());
         }
 

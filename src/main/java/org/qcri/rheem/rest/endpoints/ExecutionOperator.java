@@ -80,6 +80,7 @@ public class ExecutionOperator {
         }
         catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
             response.put("error", e.toString());
         }
 
