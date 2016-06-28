@@ -100,17 +100,19 @@ public class Core {
             String thisOpName = (String)jsonOp.get("name");
             Operator thisOp = operatorMap.get(thisOpName);
             HashMap<String, ArrayList<HashMap<String, Integer>>>  jsonConnectsTo = (HashMap)jsonOp.get("connects_to");
-            for (String thisOutputIndexStr:jsonConnectsTo.keySet()){
-                ArrayList<HashMap<String, Integer>> perOutputThatList = jsonConnectsTo.get(thisOutputIndexStr);
-                Integer thisOutputIndex = (Integer)parseObjectFromString(thisOutputIndexStr, Integer.class);
-                for (HashMap<String, Integer> jsonThatOp: perOutputThatList){
-                    // jsonThatOp is hashmap with one entry, this is bad design, should remove the list and just keep
-                    // a hashmap per output slot.
-                    String thatOpName = jsonThatOp.keySet().iterator().next();
-                    Integer thatOutputIndex = jsonThatOp.get(thatOpName);
-                    Operator thatOp = operatorMap.get(thatOpName);
-                    // Do the connection
-                    thisOp.connectTo(thisOutputIndex, thatOp, thatOutputIndex);
+            if (jsonConnectsTo!=null) {
+                for (String thisOutputIndexStr : jsonConnectsTo.keySet()) {
+                    ArrayList<HashMap<String, Integer>> perOutputThatList = jsonConnectsTo.get(thisOutputIndexStr);
+                    Integer thisOutputIndex = (Integer) parseObjectFromString(thisOutputIndexStr, Integer.class);
+                    for (HashMap<String, Integer> jsonThatOp : perOutputThatList) {
+                        // jsonThatOp is hashmap with one entry, this is bad design, should remove the list and just keep
+                        // a hashmap per output slot.
+                        String thatOpName = jsonThatOp.keySet().iterator().next();
+                        Integer thatOutputIndex = jsonThatOp.get(thatOpName);
+                        Operator thatOp = operatorMap.get(thatOpName);
+                        // Do the connection
+                        thisOp.connectTo(thisOutputIndex, thatOp, thatOutputIndex);
+                    }
                 }
             }
 
