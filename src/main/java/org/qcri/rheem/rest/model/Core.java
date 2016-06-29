@@ -105,7 +105,7 @@ public class Core {
                     ArrayList<HashMap<String, Integer>> perOutputThatList = jsonConnectsTo.get(thisOutputIndexStr);
                     Integer thisOutputIndex = (Integer) parseObjectFromString(thisOutputIndexStr, Integer.class);
                     for (HashMap<String, Integer> jsonThatOp : perOutputThatList) {
-                        // jsonThatOp is hashmap with one entry, this is bad design, should remove the list and just keep
+                        // TODO jsonThatOp is hashmap with one entry, this is bad design, should remove the list and just keep
                         // a hashmap per output slot.
                         String thatOpName = jsonThatOp.keySet().iterator().next();
                         Integer thatOutputIndex = jsonThatOp.get(thatOpName);
