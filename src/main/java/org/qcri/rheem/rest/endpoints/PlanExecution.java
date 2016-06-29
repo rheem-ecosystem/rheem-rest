@@ -38,7 +38,7 @@ public class PlanExecution {
             ExecutionPlan execplan = rheemContext.buildInitialExecutionPlan(rheemPlan);
             rheemContext.execute(rheemPlan);
             Random random = new Random();
-            response.put("run_id", random.nextInt(1000000));
+            response.put("run_id", "1");
             response.put("stages", execplan.toJsonList());
         } catch (Exception e) {
             System.out.println("Error: " + e);
