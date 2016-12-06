@@ -1,0 +1,21 @@
+package org.qcri.rheem.rest;
+
+// import KEY_TYPE
+// import THIS_INPUT_TYPE
+
+public class OPNAME_PARAMNAME_UdfFactory {
+    public static FunctionDescriptor.SerializableFunction create() {
+        return new FunctionDescriptor.SerializableFunction<THIS_INPUT_TYPE, KEY_TYPE>() {
+            @Override
+            public KEY_TYPE apply(THIS_INPUT_TYPE dataPoint) {
+                /*
+                * TODO: - Implement your thisKeyExtractor udf here !
+                *       - Replace THIS_INPUT_TYPE and KEY_TYPE with good types!
+                *       - Don't forget the imports !
+                * */
+
+                // return new KEY_TYPE();
+            }
+        };
+    }
+}

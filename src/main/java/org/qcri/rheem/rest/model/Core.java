@@ -88,7 +88,7 @@ public class Core {
 
             }
             if (opObj==null)
-                throw new InstantiationException("Could not find a single valid constructor for operator " + opClass.toString());
+                throw new InstantiationException("Could not find a single valid constructor for operator " + opName + " of type " + opClass.toString());
             else {
                 operatorMap.put(opName, opObj);
             }

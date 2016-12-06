@@ -5,10 +5,10 @@ import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.api.RheemContext;
 import org.qcri.rheem.core.plan.executionplan.ExecutionPlan;
 import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
-import org.qcri.rheem.java.JavaPlatform;
+import org.qcri.rheem.java.Java;
 import org.qcri.rheem.rest.config.Config;
 import org.qcri.rheem.rest.model.Core;
-import org.qcri.rheem.spark.platform.SparkPlatform;
+import org.qcri.rheem.spark.Spark;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -44,10 +44,10 @@ public class Plan {
         try {
             // Instantiate Rheem and activate the backend.
             RheemContext rheemContext = new RheemContext(new Configuration(Config.rheemPropertiesUrl));
-            rheemContext.register(JavaPlatform.getInstance());
-            rheemContext.register(SparkPlatform.getInstance());
+            rheemContext.register(Java.basicPlugin());
+            //rheemContext.register(Spark.basicPlugin());
             RheemPlan rheemPlan = Core.getRheemPlanFromJson(inputJsonObj);
-            ExecutionPlan execplan = rheemContext.buildInitialExecutionPlan(rheemPlan);
+            ExecutionPlan execplan = rheemContext.buildInitialExecutionPlan("1", rheemPlan);
             response.put("stages", execplan.toJsonList());
         } catch (Exception e) {
             System.out.println("Error: " + e);

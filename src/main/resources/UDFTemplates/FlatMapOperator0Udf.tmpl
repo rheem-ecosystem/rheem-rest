@@ -1,0 +1,25 @@
+package org.qcri.rheem.rest;
+
+// import INPUT
+// import OUTPUT
+
+import org.qcri.rheem.core.function.FunctionDescriptor;
+
+
+public class OPNAME_PARAMNAME_UdfFactory {
+
+    public static FunctionDescriptor.SerializableFunction create() {
+        return new FunctionDescriptor.SerializableFunction<INPUT, Iterable<OUTPUT>>() {
+            @Override
+            public Iterable<OUTPUT> apply(INPUT dataPoint) {
+                /*
+                * TODO: - Implement your FlatMap udf here !
+                *       - Replace INPUT and OUTPUT with good types!
+                *       - Don't forget the imports !
+                * */
+
+                // return new ArrayList<OUTPUT>();
+            }
+        };
+    }
+}

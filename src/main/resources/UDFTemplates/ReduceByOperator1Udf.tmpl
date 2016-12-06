@@ -1,0 +1,23 @@
+package org.qcri.rheem.rest;
+
+// import TYPE
+
+import org.qcri.rheem.core.function.FunctionDescriptor;
+
+public class OPNAME_PARAMNAME_UdfFactory {
+
+    public static FunctionDescriptor.SerializableBinaryOperator create() {
+        return new FunctionDescriptor.SerializableBinaryOperator<TYPE>() {
+            @Override
+            public TYPE apply(TYPE dataPointA, TYPE dataPointB) {
+                /*
+                * TODO: - Implement your reduceDescriptor udf here !
+                *       - Replace TYPE with good type!
+                *       - Don't forget the imports !
+                * */
+
+                // return new TYPE();
+            }
+        };
+    }
+}
