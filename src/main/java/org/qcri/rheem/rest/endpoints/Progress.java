@@ -2,7 +2,7 @@ package org.qcri.rheem.rest.endpoints;
 
 
 import org.qcri.rheem.core.api.Configuration;
-import org.qcri.rheem.core.util.Monitor;
+import org.qcri.rheem.core.monitor.Monitor;
 import org.qcri.rheem.rest.config.Config;
 
 import javax.ws.rs.GET;
@@ -25,8 +25,8 @@ public class Progress {
         String response;
         Configuration rheemConf = new Configuration(Config.rheemPropertiesUrl);
 
-        String runsDir = rheemConf.getStringProperty(Monitor.DEFAULT_RUNS_DIR_PROPERTY_KEY,
-                Monitor.DEFAULT_RUNS_DIR);
+        String runsDir = rheemConf.getStringProperty(Monitor.DEFAULT_MONITOR_BASE_URL_PROPERTY_KEY,
+                Monitor.DEFAULT_MONITOR_BASE_URL);
 
         String latest_run_id = "1";
 

@@ -15,28 +15,39 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-
+import java.util.stream.Collectors;
+import org.apache.log4j.Logger;
 /**
  *  Resource (exposed at "operators" path)
  */
 @Path("rheem_operators")
 public class RheemOperator {
+
+    private static Logger logger = Logger.getLogger(RheemOperator.class);
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Map getList() {
         ArrayList<Exception> kk = new ArrayList<>();
         Map<String, Object> response = new HashMap<>();
         try {
-        Reflections reflections = new Reflections("org.qcri.rheem.basic", "org.qcri.rheem.core.plan.rheemplan");
-        Set<Class<? extends OperatorBase>> subTypes = reflections.getSubTypesOf(OperatorBase.class);
-        List<Map> operators = new ArrayList<>();
-        for (Class opClass : subTypes) {
-            kk.clear();
-            Map<String, Object> opMap = new HashMap<>();
-            Map<String, List<Map>> opParams = new HashMap<>();
-            if (opClass.getPackage().getName().equals("org.qcri.rheem.basic.operators")) {
+            Reflections reflections = new Reflections("org.qcri.rheem.basic", "org.qcri.rheem.core.plan.rheemplan");
+
+            Set<Class<? extends OperatorBase>> subTypes = reflections.getSubTypesOf(OperatorBase.class)
+                                .stream()
+                                .filter(a -> a.getPackage().getName().equals("org.qcri.rheem.basic.operators"))
+                                .collect(Collectors.toSet());
+
+            List<Map> operators = new ArrayList<>();
+
+            for (Class opClass : subTypes) {
+                kk.clear();
+                Map<String, Object> opMap = new HashMap<>();
+                Map<String, List<Map>> opParams = new HashMap<>();
+
                 Object[] constructorParams = null;
                 OperatorBase opObj = null;
+
                 for (Constructor ctr: opClass.getDeclaredConstructors()) {
                     // TODO: Do not iterate over constructors; pick a working constructor in a smarter way.
                     try {
@@ -49,56 +60,61 @@ public class RheemOperator {
                         break;
                     }catch (Exception e){
                         kk.add(e);
+                        logger.error(e.getMessage());
                         continue;
                     }
-
                 }
 
                 if (opMap.isEmpty()) {
-                    for (Exception jj: kk) {
-                        System.out.print("----");
-                        System.out.print(kk.size());
-                        System.out.print("====");
-                        jj.printStackTrace();
-                    }
-                    throw new InstantiationException("Could not find a single valid plain constructor for operator " + opClass.toString());
+                    this.iternateError(kk, opClass);
                 }
                 else {
                     operators.add(opMap);
-                    for (int i=0; i<opClass.getDeclaredConstructors().length; i++){
-                        Constructor ctr = opClass.getDeclaredConstructors()[i];
-                        List<Map> opCtrParams = new ArrayList<>();
-                        for (int j=0; j<ctr.getParameterTypes().length; j++){
-                            Class ctrParamType = ctr.getParameterTypes()[j];
-                            HashMap<String, String> ctrParamMap = new HashMap<>();
-                            ctrParamMap.put("name", "param"+j);
-                            ctrParamMap.put("type", ctrParamType.getName());
-                            if(Core.isUdfParam(ctrParamType)){
-                                ctrParamMap.put("inputType", "UDF");
-                                ctrParamMap.put("udfTmpl", getUdfTemplate(opClass.getSimpleName(), j));
-                            }
-                            else
-                                ctrParamMap.put("inputType", "String");
-                            opCtrParams.add(ctrParamMap);
-                        }
-                        opParams.put("" + i, opCtrParams);
-                    }
+                    opParams = this.populateConstructParameters(opClass, opParams);
                     opMap.put("parameters", opParams);
                 }
 
-
             }
-
-        }
-
             response.put("operators", operators);
         }
         catch(Exception e) {
-            e.printStackTrace();
+            logger.error(e);
             response.put("error", e.toString());
         }
         return response;
     }
+
+    private Map<String, List<Map>> populateConstructParameters(Class opClass, Map<String, List<Map>> opParams){
+
+        for (int i=0; i<opClass.getDeclaredConstructors().length; i++){
+
+            Constructor ctr = opClass.getDeclaredConstructors()[i];
+            List<Map> opCtrParams = new ArrayList<>();
+
+            for (int j=0; j<ctr.getParameterTypes().length; j++){
+
+                Class ctrParamType = ctr.getParameterTypes()[j];
+                HashMap<String, String> ctrParamMap = new HashMap<>();
+
+                ctrParamMap.put("name", "param"+j);
+                ctrParamMap.put("type", ctrParamType.getName());
+
+                if(Core.isUdfParam(ctrParamType)){
+                    ctrParamMap.put("inputType", "UDF");
+                    ctrParamMap.put("udfTmpl", this.getUdfTemplate(opClass.getSimpleName(), j));
+                }
+                else
+                    ctrParamMap.put("inputType", "String");
+
+                opCtrParams.add(ctrParamMap);
+            }
+
+            opParams.put("" + i, opCtrParams);
+        }
+
+        return opParams;
+    }
+
 
     private String getUdfTemplate(String operator, Integer parameterIndex) {
         String template;
@@ -109,9 +125,23 @@ public class RheemOperator {
 
         }catch (Exception e) {
             //e.printStackTrace();
+            logger.error(e);
             template = "";
         }
         return template;
+    }
+
+    private void iternateError(ArrayList<Exception> kk, Class opClass) throws Exception{
+
+        for (Exception jj: kk) {
+            System.out.print("----");
+            System.out.print(kk.size());
+            System.out.print("====");
+            jj.printStackTrace();
+        }
+        logger.error("Could not find a single valid plain constructor for operator " + opClass.toString());
+        throw new InstantiationException("Could not find a single valid plain constructor for operator " + opClass.toString());
+
     }
 }
 

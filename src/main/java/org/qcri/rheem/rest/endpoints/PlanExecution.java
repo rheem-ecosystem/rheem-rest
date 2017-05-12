@@ -27,12 +27,15 @@ public class PlanExecution {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Map create(Map inputJsonObj) throws IOException {
+
         Map<String, Object> response = new HashMap<>();
 
 
         try {
             // Instantiate Rheem and activate the backend.
-            RheemContext rheemContext = new RheemContext(new Configuration(Config.rheemPropertiesUrl));
+            System.out.println(inputJsonObj);
+
+            RheemContext rheemContext = new RheemContext();
             rheemContext.register(Java.basicPlugin());
             //rheemContext.register(Spark.basicPlugin());
             RheemPlan rheemPlan = Core.getRheemPlanFromJson(inputJsonObj);
