@@ -25,10 +25,17 @@ public class Core {
     }
 
     public static Object parseObjectFromString(String s, Class clazz) throws Exception {
-        if (s.equals("null"))
-            // Special null case
+        try{
+            if (s.equals("null"))
+                // Special null case
+                return null;
+            else return clazz.getConstructor(new Class[] {String.class }).newInstance(s);
+
+        }
+        catch (Exception e){
+            logger.error(e);
             return null;
-        else return clazz.getConstructor(new Class[] {String.class }).newInstance(s);
+        }
     }
 
     public static Boolean isUdfParam(Class cls) {
@@ -38,13 +45,14 @@ public class Core {
                 || FunctionDescriptor.class.isAssignableFrom(cls));
     }
 
-    private static Object[] buildContructorParameter(Constructor ctr, Class[] constrParamTypes,
-                                                    String opName,ArrayList<String> jsonConstrParamNames,
-                                                 ArrayList<String> jsonConstrParamValues) throws Exception {
+    public static Object[] buildContructorParameter(Constructor ctr, Class[] constrParamTypes,
+                                                     String opName, ArrayList<String> jsonConstrParamNames,
+                                                     ArrayList<String> jsonConstrParamValues) throws Exception {
 
         Object[] constructorParams = new Object[ctr.getParameterCount()];
 
         for (int k=0; k<ctr.getParameterCount(); k++){
+            //System.out.println(constrParamTypes[k]);
             if (isUdfParam(constrParamTypes[k])){
                 //flatMapOperator_param0_UdfFactory
                 String udfClassName = opName + "_" + jsonConstrParamNames.get(k) + "_UdfFactory";
@@ -61,8 +69,10 @@ public class Core {
             else {
                 // try to just Parse string value. This will work for any type providing a
                 // constructor that accepts a single string parameter.
-                constructorParams[k] = parseObjectFromString(jsonConstrParamValues.get(k),
-                        constrParamTypes[k]);
+                Object obj = parseObjectFromString(jsonConstrParamValues.get(k), constrParamTypes[k]);
+                if((obj == null && jsonConstrParamValues.get(k).equalsIgnoreCase("null")) || obj != null) {
+                    constructorParams[k] = obj;
+                }
 
             }
 
@@ -103,7 +113,7 @@ public class Core {
                 }
             }
 
-            if (opObj==null)
+            if (opObj == null)
                 throw new InstantiationException("Could not find a single valid constructor for operator " + opName + " of type " + opClass.toString());
             else {
                 operatorMap.put(opName, opObj);
@@ -112,6 +122,7 @@ public class Core {
         }
 
         // Build plan by connecting operators.
+
         buildPlan(jsonOperators, operatorMap);
 
         // Detect sinks and create a new rheem plan

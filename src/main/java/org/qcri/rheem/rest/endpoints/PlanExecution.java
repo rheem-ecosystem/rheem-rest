@@ -1,11 +1,13 @@
 package org.qcri.rheem.rest.endpoints;
 
+import org.apache.log4j.Logger;
 import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.api.RheemContext;
 import org.qcri.rheem.core.plan.executionplan.ExecutionPlan;
 import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
 import org.qcri.rheem.java.Java;
 import org.qcri.rheem.rest.config.Config;
+import org.qcri.rheem.rest.exception.RheemRestException;
 import org.qcri.rheem.rest.model.Core;
 import org.qcri.rheem.spark.Spark;
 import org.qcri.rheem.spark.platform.SparkPlatform;
@@ -23,6 +25,8 @@ import java.util.Random;
 @Path("plan_executions")
 public class PlanExecution {
 
+    private static Logger logger = Logger.getLogger(PlanExecution.class);
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -33,6 +37,7 @@ public class PlanExecution {
 
         try {
             // Instantiate Rheem and activate the backend.
+            logger.info("inputJsonObj: " + inputJsonObj);
             System.out.println(inputJsonObj);
 
             RheemContext rheemContext = new RheemContext();
@@ -48,10 +53,13 @@ public class PlanExecution {
 
             response.put("run_id", "1");
             response.put("stages", execplan.toJsonList());
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-            e.printStackTrace();
-            response.put("error", e.toString());
+        }catch (RheemRestException e1) {
+            logger.error(e1);
+            response.put("error", "RheemRestException: " + e1.toString());
+        }
+        catch (Exception e2) {
+            logger.error(e2);
+            response.put("error", "Exception: " +e2.toString());
         }
         return response;
     }

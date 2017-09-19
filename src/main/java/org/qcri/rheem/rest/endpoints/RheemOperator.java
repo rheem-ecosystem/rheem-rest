@@ -124,7 +124,6 @@ public class RheemOperator {
             template = new String(encoded, Charset.defaultCharset());
 
         }catch (Exception e) {
-            //e.printStackTrace();
             logger.error(e);
             template = "";
         }
@@ -142,6 +141,62 @@ public class RheemOperator {
         logger.error("Could not find a single valid plain constructor for operator " + opClass.toString());
         throw new InstantiationException("Could not find a single valid plain constructor for operator " + opClass.toString());
 
+    }
+
+    public List<Map> getOperators(){
+        ArrayList<Exception> kk = new ArrayList<>();
+        List<Map> operators = new ArrayList<>();
+        try {
+            Reflections reflections = new Reflections("org.qcri.rheem.basic", "org.qcri.rheem.core.plan.rheemplan");
+
+            Set<Class<? extends OperatorBase>> subTypes = reflections.getSubTypesOf(OperatorBase.class)
+                    .stream()
+                    .filter(a -> a.getPackage().getName().equals("org.qcri.rheem.basic.operators"))
+                    .collect(Collectors.toSet());
+
+
+
+            for (Class opClass : subTypes) {
+                kk.clear();
+                Map<String, Object> opMap = new HashMap<>();
+                Map<String, List<Map>> opParams = new HashMap<>();
+
+                Object[] constructorParams = null;
+                OperatorBase opObj = null;
+
+                for (Constructor ctr: opClass.getDeclaredConstructors()) {
+                    // TODO: Do not iterate over constructors; pick a working constructor in a smarter way.
+                    try {
+                        constructorParams = new Object[ctr.getParameterCount()];
+                        opObj = (OperatorBase)ctr.newInstance(constructorParams);
+                        opMap.put("class", opClass.getName());
+                        opMap.put("supportBroadcast", opObj.isSupportingBroadcastInputs());
+                        opMap.put("nb_inputs", opObj.getNumRegularInputs());
+                        opMap.put("nb_outputs", opObj.getNumOutputs());
+                        break;
+                    }catch (Exception e){
+                        kk.add(e);
+                        logger.error(e.getMessage());
+                        continue;
+                    }
+                }
+
+                if (opMap.isEmpty()) {
+                    this.iternateError(kk, opClass);
+                }
+                else {
+                    operators.add(opMap);
+                    opParams = this.populateConstructParameters(opClass, opParams);
+                    opMap.put("parameters", opParams);
+                }
+
+            }
+        }
+        catch(Exception e) {
+            logger.error(e);
+        }
+
+        return operators;
     }
 }
 
