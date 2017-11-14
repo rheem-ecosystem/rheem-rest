@@ -116,6 +116,26 @@ public class Core {
                 }
             }
 
+            HashMap<String, ArrayList<HashMap<String, Integer>>>  jsonbroadCastsTo = (HashMap)jsonOp.get("broadcasts_to");
+            if (jsonbroadCastsTo!=null) {
+                for (String thisOutputIndexStr : jsonbroadCastsTo.keySet()) {
+                    ArrayList<HashMap<String, Integer>> perOutputThatList = jsonbroadCastsTo.get(thisOutputIndexStr);
+
+                    // For now assume the broadcast name is the operator name
+                    // TODO: add broadcast name parameter.
+                    Integer thisOutputIndex = (Integer) parseObjectFromString(thisOutputIndexStr, Integer.class);
+                    String broadCastName = thisOpName;
+                    for (HashMap<String, Integer> jsonThatOp : perOutputThatList) {
+                        // TODO jsonThatOp is hashmap with one entry, same comment as connect_to above
+
+                        String thatOpName = jsonThatOp.keySet().iterator().next();
+                        Operator thatOp = operatorMap.get(thatOpName);
+                        // Do the broadcast
+                        thisOp.broadcastTo(thisOutputIndex, thatOp, broadCastName);
+                    }
+                }
+            }
+
 
         }
 
