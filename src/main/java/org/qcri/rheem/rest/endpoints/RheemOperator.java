@@ -1,6 +1,7 @@
 package org.qcri.rheem.rest.endpoints;
 
 import org.qcri.rheem.core.plan.rheemplan.OperatorBase;
+import org.qcri.rheem.rest.config.BasicOperator;
 import org.qcri.rheem.rest.model.Core;
 import org.reflections.Reflections;
 
@@ -57,6 +58,8 @@ public class RheemOperator {
                         opMap.put("supportBroadcast", opObj.isSupportingBroadcastInputs());
                         opMap.put("nb_inputs", opObj.getNumRegularInputs());
                         opMap.put("nb_outputs", opObj.getNumOutputs());
+                        opMap.put("loop", opObj.isLoopHead());
+                        opMap.put("basic", this.isBasicOperator(opClass.getName()));
                         break;
                     }catch (Exception e){
                         kk.add(e);
@@ -82,6 +85,16 @@ public class RheemOperator {
             response.put("error", e.toString());
         }
         return response;
+    }
+
+    private boolean isBasicOperator(String className){
+        boolean found = false;
+        for(BasicOperator operator : BasicOperator.values()){
+            if(operator.getName().equalsIgnoreCase(className)){
+                found = true;
+            }
+        }
+        return found;
     }
 
     private Map<String, List<Map>> populateConstructParameters(Class opClass, Map<String, List<Map>> opParams){
@@ -114,7 +127,6 @@ public class RheemOperator {
 
         return opParams;
     }
-
 
     private String getUdfTemplate(String operator, Integer parameterIndex) {
         String template;
@@ -173,6 +185,8 @@ public class RheemOperator {
                         opMap.put("supportBroadcast", opObj.isSupportingBroadcastInputs());
                         opMap.put("nb_inputs", opObj.getNumRegularInputs());
                         opMap.put("nb_outputs", opObj.getNumOutputs());
+                        opMap.put("loop", opObj.isLoopHead());
+                        opMap.put("basic", this.isBasicOperator(opClass.getName()));
                         break;
                     }catch (Exception e){
                         kk.add(e);

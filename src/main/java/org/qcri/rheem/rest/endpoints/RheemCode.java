@@ -36,14 +36,6 @@ public class RheemCode {
         }
 
         try {
-            /**
-            RheemContext rheemContext = new RheemContext();
-            rheemContext.register(Java.basicPlugin());
-            RheemPlan rheemPlan = Core.getRheemPlanFromJson(inputJsonObj);
-            ExecutionPlan execplan = rheemContext.buildInitialExecutionPlan("1", rheemPlan);
-            System.out.println(rheemPlan);
-            System.out.println(execplan);
-            **/
             TemplateGenerator tg = new TemplateGenerator();
             List<Param> methodItems = tg.populateStructure(inputJsonObj);
 
@@ -103,6 +95,5 @@ public class RheemCode {
 
         return response;
     }
-
 
 }

@@ -30,8 +30,7 @@ public class LatestRun {
         //response = "{\"run_id\":\"1\",\"stages\":[{\"sequence_number\":0,\"operators\":[{\"is_start\":1,\"is_terminal\":0,\"name\":\"mySource\",\"java_class\":\"org.qcri.rheem.java.operators.JavaTextFileSource\",\"connects_to\":{\"0\":[{\"flatMapOperator\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"flatMapOperator\",\"java_class\":\"org.qcri.rheem.java.operators.JavaFlatMapOperator\",\"connects_to\":{\"0\":[{\"mapOperator\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"mapOperator\",\"java_class\":\"org.qcri.rheem.java.operators.JavaMapOperator\",\"connects_to\":{\"0\":[{\"reduceOp\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"reduceOp\",\"java_class\":\"org.qcri.rheem.java.operators.JavaReduceByOperator\",\"connects_to\":{\"0\":[{\"sinkoperator1\":0,\"via\":\"CollectionChannel\"}]}},{\"is_start\":0,\"is_terminal\":1,\"name\":\"sinkoperator1\",\"java_class\":\"org.qcri.rheem.java.operators.JavaLocalCallbackSink\",\"connects_to\":{}}],\"platform\":\"Java Streams\"}]}";
         Configuration rheemConf = new Configuration(Config.rheemPropertiesUrl);
 
-        String runsDir = rheemConf.getStringProperty(Monitor.DEFAULT_MONITOR_BASE_URL_PROPERTY_KEY,
-                Monitor.DEFAULT_MONITOR_BASE_URL);
+        String runsDir = rheemConf.getStringProperty(Monitor.MONITOR_ENABLED_PROPERTY_KEY, Monitor.DEFAULT_MONITOR_BASE_URL);
 
         String latest_run_id = "1";
 
@@ -47,4 +46,39 @@ public class LatestRun {
         }
         return response;
     }
+
+
+    /**
+     *
+     public String get() throws IOException {
+     String response;
+     response = "{\"run_id\":\"1\",\"stages\":[{\"sequence_number\":0,\"operators\":[{\"is_start\":1,\"is_terminal\":0,\"name\":\"mySource\",\"java_class\":\"org.qcri.rheem.java.operators.JavaTextFileSource\",\"connects_to\":{\"0\":[{\"flatMapOperator\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"flatMapOperator\",\"java_class\":\"org.qcri.rheem.java.operators.JavaFlatMapOperator\",\"connects_to\":{\"0\":[{\"mapOperator\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"mapOperator\",\"java_class\":\"org.qcri.rheem.java.operators.JavaMapOperator\",\"connects_to\":{\"0\":[{\"reduceOp\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"reduceOp\",\"java_class\":\"org.qcri.rheem.java.operators.JavaReduceByOperator\",\"connects_to\":{\"0\":[{\"sinkoperator1\":0,\"via\":\"CollectionChannel\"}]}},{\"is_start\":0,\"is_terminal\":1,\"name\":\"sinkoperator1\",\"java_class\":\"org.qcri.rheem.java.operators.JavaLocalCallbackSink\",\"connects_to\":{}}],\"platform\":\"Java Streams\"}]}";
+
+     //  return response;
+
+     //     Configuration rheemConf = new Configuration(Config.rheemPropertiesUrl);
+
+     //   String runsDir = rheemConf.getStringProperty(Monitor.DEFAULT_MONITOR_BASE_URL_PROPERTY_KEY,
+     //         Monitor.DEFAULT_MONITOR_BASE_URL);
+
+     String latest_run_id = "1";
+
+     final String path = "/Users/jlucas/Documents/Rheem/data/run/1";
+     final String exPlanUrl = "/Users/jlucas/Documents/Rheem/data/run/1/execplan.json";
+     ///Users/jlucas/Documents/Rheem/data/run/1
+     try {
+     java.nio.file.Path path1 = Paths.get("/Users/jlucas/Documents/Rheem/data/run/1/", "execplan.json");
+     byte[] encoded = Files.readAllBytes(path1);
+     response = new String(encoded, Charset.defaultCharset());
+
+     }catch (Exception e) {
+     e.printStackTrace();
+     response = "";
+     //   response = "{\"run_id\":\"1\",\"stages\":[{\"sequence_number\":0,\"operators\":[{\"is_start\":1,\"is_terminal\":0,\"name\":\"mySource\",\"java_class\":\"org.qcri.rheem.java.operators.JavaTextFileSource\",\"connects_to\":{\"0\":[{\"flatMapOperator\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"flatMapOperator\",\"java_class\":\"org.qcri.rheem.java.operators.JavaFlatMapOperator\",\"connects_to\":{\"0\":[{\"mapOperator\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"mapOperator\",\"java_class\":\"org.qcri.rheem.java.operators.JavaMapOperator\",\"connects_to\":{\"0\":[{\"reduceOp\":0,\"via\":\"StreamChannel\"}]}},{\"is_start\":0,\"is_terminal\":0,\"name\":\"reduceOp\",\"java_class\":\"org.qcri.rheem.java.operators.JavaReduceByOperator\",\"connects_to\":{\"0\":[{\"sinkoperator1\":0,\"via\":\"CollectionChannel\"}]}},{\"is_start\":0,\"is_terminal\":1,\"name\":\"sinkoperator1\",\"java_class\":\"org.qcri.rheem.java.operators.JavaLocalCallbackSink\",\"connects_to\":{}}],\"platform\":\"Java Streams\"}]}";
+
+     }
+     return response;
+
+     }
+     */
 }

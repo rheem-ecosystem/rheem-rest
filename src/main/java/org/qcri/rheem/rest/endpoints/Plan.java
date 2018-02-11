@@ -50,13 +50,20 @@ public class Plan {
             System.out.println(inputJsonObj);
 
            // RheemContext rheemContext = new RheemContext(new Configuration(Config.rheemPropertiesUrl));
+
             RheemContext rheemContext = new RheemContext();
             rheemContext.register(Java.basicPlugin());
 
             //rheemContext.register(Spark.basicPlugin());
             RheemPlan rheemPlan = Core.getRheemPlanFromJson(inputJsonObj);
+            System.out.println("rheen plan : " + rheemPlan);
+
             ExecutionPlan execplan = rheemContext.buildInitialExecutionPlan("1", rheemPlan);
+
+
+
             response.put("stages", execplan.toJsonList());
+
         } catch (RheemRestException ee) {
             logger.error(ee);
             System.out.println("Runtime error" + ee);
