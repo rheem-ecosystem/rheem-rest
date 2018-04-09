@@ -3,10 +3,12 @@ package org.qcri.rheem.rest;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.qcri.rheem.basic.operators.LocalCallbackSink;
 import org.qcri.rheem.rest.config.Config;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 
 /**
  * Main class.

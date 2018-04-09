@@ -9,10 +9,7 @@ import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Core {
     public static Class getClassFromText(String sourceCode, String className) throws Exception {
@@ -64,6 +61,7 @@ public class Core {
                                 constructorParams[k] = udfObj;
                             }
                             else if (constrParamTypes[k].isAssignableFrom(Class.class)){
+                               // System.out.println(jsonConstrParamValues.get(k));
                                 constructorParams[k] = Class.forName(jsonConstrParamValues.get(k));
                             }
                             else {
@@ -80,6 +78,9 @@ public class Core {
                         break;
 
                     }catch (Exception e) {
+                       // e.printStackTrace();
+                       // System.err.println("types"+Arrays.toString(constrParamTypes));
+                        //System.err.println("params"+Arrays.toString(constructorParams));
                         // Not the right constructor, try the next one.
                         continue;
                     }
@@ -146,5 +147,42 @@ public class Core {
             sinks[z] = operatorMap.get(jsonSinkOperators.get(z));
         }
         return new RheemPlan(sinks);
+    }
+
+
+    public static Object[] buildContructorParameter(Constructor ctr, Class[] constrParamTypes,
+                                                    String opName, ArrayList<String> jsonConstrParamNames,
+                                                    ArrayList<String> jsonConstrParamValues) throws Exception {
+
+        Object[] constructorParams = new Object[ctr.getParameterCount()];
+
+        for (int k=0; k<ctr.getParameterCount(); k++){
+            //System.out.println(constrParamTypes[k]);
+            if (isUdfParam(constrParamTypes[k])){
+                //flatMapOperator_param0_UdfFactory
+                String udfClassName = opName + "_" + jsonConstrParamNames.get(k) + "_UdfFactory";
+                udfClassName = "org.qcri.rheem.rest." + udfClassName;
+
+                Class udfCls = getClassFromText(jsonConstrParamValues.get(k), udfClassName);
+                Method m = udfCls.getDeclaredMethod("create", null);
+                Object udfObj = m.invoke(null, null);
+                constructorParams[k] = udfObj;
+            }
+            else if (constrParamTypes[k].isAssignableFrom(Class.class)){
+                constructorParams[k] = Class.forName(jsonConstrParamValues.get(k));
+            }
+            else {
+                // try to just Parse string value. This will work for any type providing a
+                // constructor that accepts a single string parameter.
+                Object obj = parseObjectFromString(jsonConstrParamValues.get(k), constrParamTypes[k]);
+                if((obj == null && jsonConstrParamValues.get(k).equalsIgnoreCase("null")) || obj != null) {
+                    constructorParams[k] = obj;
+                }
+
+            }
+
+        }
+
+        return constructorParams;
     }
 }
