@@ -8,13 +8,13 @@ import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
 import org.qcri.rheem.java.Java;
 import org.qcri.rheem.rest.config.Config;
 import org.qcri.rheem.rest.model.Core;
+import org.qcri.rheem.rest.util.ExecPlanUtil;
 import org.qcri.rheem.spark.Spark;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  *  Resource (exposed at "plans" path)
@@ -47,14 +47,38 @@ public class Plan {
             rheemContext.register(Java.basicPlugin());
             //rheemContext.register(Spark.basicPlugin());
             RheemPlan rheemPlan = Core.getRheemPlanFromJson(inputJsonObj);
+
             ExecutionPlan execplan = rheemContext.buildInitialExecutionPlan("1", rheemPlan);
-            response.put("stages", execplan.toJsonList());
+
+            List<Map> execplanList = execplan.toJsonList();
+
+            for(Map aMap : execplanList){
+                System.out.println(aMap);
+                if(aMap.get("operators")!= null){
+                    //System.out.println(aMap.get("operators"));
+                    List<Map> ops = (List)aMap.get("operators");
+                    //System.out.println(ops);
+
+                    if(!ExecPlanUtil.hasOnlyOneStartPoint(ops)){
+                        List<Map> update_ops = ExecPlanUtil.sortStartingNodes(ops);
+                        aMap.put("operators", update_ops);
+
+                    }
+                }
+
+            }
+
+            response.put("stages", execplanList);
+
         } catch (Exception e) {
-            System.out.println("Error: " + e);
-            e.printStackTrace();
+           // System.out.println("Error: " + e);
+           // e.printStackTrace();
             response.put("error", e.toString());
         }
 
         return response;
     }
+
+
+
 }
