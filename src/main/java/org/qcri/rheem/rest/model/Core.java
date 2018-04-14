@@ -61,7 +61,6 @@ public class Core {
                                 constructorParams[k] = udfObj;
                             }
                             else if (constrParamTypes[k].isAssignableFrom(Class.class)){
-                               // System.out.println(jsonConstrParamValues.get(k));
                                 constructorParams[k] = Class.forName(jsonConstrParamValues.get(k));
                             }
                             else {
@@ -73,15 +72,18 @@ public class Core {
                             }
 
                         }
-                        opObj = (OperatorBase)ctr.newInstance(constructorParams);
-                        opObj.setName(opName);
-                        break;
+                            opObj = (OperatorBase)ctr.newInstance(constructorParams);
+                            opObj.setName(opName);
+                            break;
 
-                    }catch (Exception e) {
-                       // e.printStackTrace();
-                       // System.err.println("types"+Arrays.toString(constrParamTypes));
-                        //System.err.println("params"+Arrays.toString(constructorParams));
-                        // Not the right constructor, try the next one.
+                        }catch (Exception e) {
+                           // e.printStackTrace();
+                        // e.printStackTrace();
+                       /** System.err.println(opClass.getClass().getName());
+                        System.err.println("@@@@@"+jsonOp.get("java_class"));
+                        System.err.println("types"+Arrays.toString(constrParamTypes));
+                        System.err.println("params"+Arrays.toString(constructorParams));
+                        **/
                         continue;
                     }
 

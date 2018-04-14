@@ -33,7 +33,7 @@ public class ExecPlanUtil {
 
                     while (iter.hasNext()) {
                         Map.Entry mEntry = (Map.Entry) iter.next();
-                        System.out.println(mEntry.getKey() + " : " + mEntry.getValue());
+                        //System.out.println(mEntry.getKey() + " : " + mEntry.getValue());
 
                         String connect_to_name = mEntry.getKey().toString();
 

@@ -22,7 +22,7 @@ public class Progress {
     public String get() throws IOException {
         //String response = "{\"overall\":80, \"details\": {\"mySource\": 100}}";
 
-        String response;
+        String response = "";
         Configuration rheemConf = new Configuration(Config.rheemPropertiesUrl);
 
         String runsDir = rheemConf.getStringProperty(Monitor.DEFAULT_MONITOR_BASE_URL_PROPERTY_KEY,
@@ -33,11 +33,14 @@ public class Progress {
         final String path = runsDir + "/" + latest_run_id;
         final String exPlanUrl = path + "/progress.json";
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(new URI(exPlanUrl)));
-            response = new String(encoded, Charset.defaultCharset());
+
+            if(Files.exists(Paths.get(new URI(exPlanUrl)))){
+                byte[] encoded = Files.readAllBytes(Paths.get(new URI(exPlanUrl)));
+                response = new String(encoded, Charset.defaultCharset());
+            }
 
         }catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
             response = "";
         }
         return response;

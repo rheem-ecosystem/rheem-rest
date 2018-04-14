@@ -51,7 +51,7 @@ public class PlanExecution {
             List<Map> execplanList = execplan.toJsonList();
 
             for(Map aMap : execplanList){
-                System.out.println(aMap);
+                //System.out.println(aMap);
                 if(aMap.get("operators")!= null){
                     //System.out.println(aMap.get("operators"));
                     List<Map> ops = (List)aMap.get("operators");
