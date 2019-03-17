@@ -42,6 +42,7 @@ public class Plan {
     @Consumes(MediaType.APPLICATION_JSON)
     public Map create(Map inputJsonObj) throws IOException {        Map<String, Object> response = new HashMap<>();
         try {
+            System.out.println("dasdas");
             // Instantiate Rheem and activate the backend.
             RheemContext rheemContext = new RheemContext(new Configuration(Config.rheemPropertiesUrl));
             rheemContext.register(Java.basicPlugin());

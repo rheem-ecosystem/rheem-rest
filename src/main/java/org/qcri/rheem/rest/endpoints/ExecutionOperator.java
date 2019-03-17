@@ -26,6 +26,7 @@ public class ExecutionOperator {
         List<Map> operators = new ArrayList<>();
         try{
             for (Class opClass : subTypes) {
+                System.out.println("procesando: "+ opClass.toString());
                 Map<String, Object> opMap = new HashMap<>();
                 Map<String, List<Map>> opParams = new HashMap<>();
                 if (!opClass.isInterface()) {
@@ -45,13 +46,16 @@ public class ExecutionOperator {
                             opMap.put("platform", exOpObj.getPlatform().getName());
                             break;
                         }catch (Exception e){
+                            System.out.println("heres "+ opClass.toString());
                             continue;
                         }
 
                     }
-                    if (opMap.isEmpty())
-                        throw new InstantiationException("Could not find a single valid plain constructor for operator " + opClass.toString());
-                    else {
+                    if (opMap.isEmpty()) {
+                        System.out.println("here");
+                        // throw new InstantiationException("Could not find a single valid plain constructor for operator " + opClass.toString());
+                        System.err.println("Could not find a single valid plain constructor for operator " + opClass.toString());
+                    } else {
                         operators.add(opMap);
                         for (int i=0; i<opClass.getDeclaredConstructors().length; i++){
                             Constructor ctr = opClass.getDeclaredConstructors()[i];
@@ -70,15 +74,14 @@ public class ExecutionOperator {
                             opParams.put("" + i, opCtrParams);
                         }
                         opMap.put("parameters", opParams);
+                        System.out.println("heeeeeee");
                     }
-
-
                 }
-
             }
+            System.out.println("hasta aqui??");
             response.put("operators", operators);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            System.out.println("Explote??");
             System.out.println(e);
             e.printStackTrace();
             response.put("error", e.toString());

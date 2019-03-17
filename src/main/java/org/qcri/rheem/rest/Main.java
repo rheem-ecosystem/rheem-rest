@@ -9,6 +9,8 @@ import org.qcri.rheem.rest.config.Config;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main class.
@@ -38,7 +40,16 @@ public class Main {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        Logger log = Logger.getLogger(Main.class.getName());
+
+        log.log(Level.WARNING,"Starting server .....");
+
+        Logger log2 = Logger.getLogger("org.glassfish.grizzly");
+        log2.setLevel(Level.ALL);
+        log2.addHandler(new java.util.logging.ConsoleHandler());
+
         final HttpServer server = startServer();
+
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();

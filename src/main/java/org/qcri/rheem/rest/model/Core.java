@@ -12,8 +12,22 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class Core {
+
+    public static HashMap<String, Class> COMPILADAS = new HashMap<>();
     public static Class getClassFromText(String sourceCode, String className) throws Exception {
-        return CompilerUtils.CACHED_COMPILER.loadFromJava(className, sourceCode);
+        if( ! COMPILADAS.containsKey(className)) {
+            System.out.println("compilada??  "+ className);
+            try {
+                Class compilada = CompilerUtils.CACHED_COMPILER.loadFromJava(className, sourceCode);
+                COMPILADAS.put(className, compilada);
+                System.out.println(COMPILADAS);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+        return COMPILADAS.get(className);
+
     }
 
     public static Object parseObjectFromString(String s, Class clazz) throws Exception {
@@ -31,6 +45,7 @@ public class Core {
     }
 
     public static RheemPlan getRheemPlanFromJson(Map inputJsonObj) throws Exception{
+        int pase = 0;
         ArrayList<HashMap> jsonOperators = (ArrayList)inputJsonObj.get("operators");
         Map<String, Operator> operatorMap = new HashMap<>();
 
@@ -43,29 +58,51 @@ public class Core {
             String opName = (String)jsonOp.get("name");
             Object[] constructorParams = null;
             Operator opObj = null;
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("OPERATOR::::: "+ opName);
 
             for (Constructor ctr: opClass.getDeclaredConstructors()) {
                 Class[] constrParamTypes = ctr.getParameterTypes();
+                System.out.println(constrParamTypes.length);
+                System.out.println(jsonConstrParamValues.size());
+                System.out.println(ctr);
                 if (constrParamTypes.length==jsonConstrParamValues.size()){
+                    System.out.println("here??");
+                    System.out.println(Arrays.toString(constrParamTypes));
                     try{
                         constructorParams = new Object[ctr.getParameterCount()];
                         for (int k=0; k<ctr.getParameterCount(); k++){
-                            if (isUdfParam(constrParamTypes[k])){
+                            System.out.println("lalalal " + constrParamTypes[k]);
+                            if (isUdfParam(constrParamTypes[k])) {
+                                System.out.println("pase " + (++pase));
                                 //flatMapOperator_param0_UdfFactory
-                                String udfClassName = opName + "_" + jsonConstrParamNames.get(k) + "_UdfFactory";
+                                String udfClassName = jsonConstrParamNames.get(k) + "_UdfFactory";
                                 udfClassName = "org.qcri.rheem.rest." + udfClassName;
 
                                 Class udfCls = getClassFromText(jsonConstrParamValues.get(k), udfClassName);
-                                Method m = udfCls.getDeclaredMethod("create", null);
-                                Object udfObj = m.invoke(null, null);
+                                Object udfObj;
+                                if (udfCls != null) {
+                                    Method m = udfCls.getDeclaredMethod("create", null);
+                                    udfObj = m.invoke(null, null);
+                                } else{
+                                    udfObj = null;
+                                }
                                 constructorParams[k] = udfObj;
                             }
                             else if (constrParamTypes[k].isAssignableFrom(Class.class)){
+                                System.out.println("heeehehe");
                                 constructorParams[k] = Class.forName(jsonConstrParamValues.get(k));
                             }
                             else {
                                 // try to just Parse string value. This will work for any type providing a
                                 // constructor that accepts a single string parameter.
+                                System.out.println("hdahjkd");
+                                System.out.println("jsonConstrParamValues" + Arrays.toString(jsonConstrParamValues.toArray()));
+                                System.out.println("jsonConstrParamValues.get(k)" + jsonConstrParamValues.get(k));
+                                System.out.println("constrParamTypes[k]" + constrParamTypes[k]);
                                 constructorParams[k] = parseObjectFromString(jsonConstrParamValues.get(k),
                                         constrParamTypes[k]);
 
@@ -78,14 +115,15 @@ public class Core {
 
                         }catch (Exception e) {
                            // e.printStackTrace();
-                        // e.printStackTrace();
-                       /** System.err.println(opClass.getClass().getName());
-                        System.err.println("@@@@@"+jsonOp.get("java_class"));
-                        System.err.println("types"+Arrays.toString(constrParamTypes));
-                        System.err.println("params"+Arrays.toString(constructorParams));
-                        **/
-                        continue;
-                    }
+                            // e.printStackTrace();
+                           /** System.err.println(opClass.getClass().getName());
+                            System.err.println("@@@@@"+jsonOp.get("java_class"));
+                            System.err.println("types"+Arrays.toString(constrParamTypes));
+                            System.err.println("params"+Arrays.toString(constructorParams));
+                            **/
+                            System.out.println("dashgdhajs");
+                            continue;
+                        }
 
                 }
 
@@ -114,6 +152,11 @@ public class Core {
                         Integer thatOutputIndex = jsonThatOp.get(thatOpName);
                         Operator thatOp = operatorMap.get(thatOpName);
                         // Do the connection
+                        System.out.println(thisOp);
+                        System.out.println(thisOutputIndex);
+                        System.out.println(thatOp);
+                        System.out.println(thatOutputIndex);
+
                         thisOp.connectTo(thisOutputIndex, thatOp, thatOutputIndex);
                     }
                 }
