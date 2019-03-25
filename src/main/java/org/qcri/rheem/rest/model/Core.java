@@ -80,6 +80,7 @@ public class Core {
                                 System.out.println("pase " + (++pase));
                                 //flatMapOperator_param0_UdfFactory
                                 String udfClassName = jsonConstrParamNames.get(k) + "_UdfFactory";
+                                //String udfClassName = "FilterOperator_FilterOperator_UdfFactory";
                                 udfClassName = "org.qcri.rheem.rest." + udfClassName;
 
                                 Class udfCls = getClassFromText(jsonConstrParamValues.get(k), udfClassName);
@@ -114,7 +115,7 @@ public class Core {
                             break;
 
                         }catch (Exception e) {
-                           // e.printStackTrace();
+                            //e.printStackTrace();
                             // e.printStackTrace();
                            /** System.err.println(opClass.getClass().getName());
                             System.err.println("@@@@@"+jsonOp.get("java_class"));

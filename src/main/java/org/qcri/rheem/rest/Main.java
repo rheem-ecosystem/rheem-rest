@@ -4,6 +4,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.qcri.rheem.basic.operators.LocalCallbackSink;
+import org.qcri.rheem.rest.config.CORSFilter;
 import org.qcri.rheem.rest.config.Config;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class Main {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.qcri.rheem package
         final ResourceConfig rc = new ResourceConfig().packages("org.qcri.rheem.rest");
-
+        //rc.register(new CORSFilter());
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
